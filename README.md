@@ -7,25 +7,31 @@ End-to-end ELT pipeline on the GitHub API: Python, dbt, Airflow, Postgres.
 
 **Method.** Cohort of issues and PRs created between 2026-07-10 and 30 days
 before the run date, so every item has at least 30 days of follow-up. Items
-still open count as "not closed". Percentages are only reported when n >= 100.
+still open count as "not closed". Bot-authored items (GitHub accounts of type
+`Bot`) are excluded. Percentages are only reported when n >= 100.
 
 | Repo | PRs (n) | PR closed ≤7d | PR closed ≤30d | Issues (n) | Issue closed ≤7d | Issue closed ≤30d |
 |---|---|---|---|---|---|---|
-| PrefectHQ/prefect | 463 | 72.4% | 90.9% | 105 | 59.0% | 75.2% |
 | duckdb/duckdb | 1,139 | 71.6% | 82.9% | 502 | 37.3% | 61.0% |
-| dbt-labs/dbt-core | 361 | 69.0% | 77.0% | 360 | 17.5% | 45.6% |
-| apache/spark | 1,371 | 66.6% | 82.0% | 24 | n/a | n/a |
+| apache/spark | 1,361 | 66.3% | 81.9% | 24 | n/a | n/a |
 | delta-io/delta | 411 | 65.5% | 76.9% | 31 | n/a | n/a |
-| apache/airflow | 2,635 | 58.7% | 78.2% | 322 | 24.8% | 42.9% |
-| apache/iceberg | 695 | 46.2% | 58.4% | 159 | 8.8% | 17.6% |
-| dagster-io/dagster | 146 | 25.3% | 30.1% | 38 | n/a | n/a |
+| dbt-labs/dbt-core | 313 | 64.2% | 73.5% | 354 | 17.8% | 45.5% |
+| PrefectHQ/prefect | 170 | 54.7% | 78.8% | 103 | 59.2% | 75.7% |
+| apache/airflow | 2,125 | 50.9% | 73.1% | 322 | 24.8% | 42.9% |
+| apache/iceberg | 600 | 38.0% | 52.0% | 159 | 8.8% | 17.6% |
+| dagster-io/dagster | 134 | 25.4% | 29.1% | 38 | n/a | n/a |
 
 **Takeaways**
-- PRs are resolved far faster than issues in nearly every project.
-- Prefect is the only project where issues close almost as fast as PRs.
-- Iceberg shows the slowest turnaround on both issues and PRs.
+- Human-authored PRs are resolved faster than issues in most projects.
+- Prefect is the exception: issues close as fast as PRs.
+- Filtering bots matters: ~63% of Prefect's PRs were bot-authored, which
+  inflated its PR close rate from 54.7% to 72.4% at 7 days.
+- Among repos with enough issue data, Iceberg has the slowest issue turnaround.
 
 **Limitations**
 - Window covers recently updated items only, not each repo's full history.
-- "Closed" includes merged and rejected PRs; bot-authored items not yet filtered.
-- Small samples (n < 100) are suppressed.
+- "Closed" includes both merged and rejected PRs.
+- The bot filter only catches accounts registered as `Bot`; automation running
+  under regular user accounts is not detected.
+- Small samples (n < 100) are suppressed. Prefect issues (n = 103) are close
+  to the threshold.
