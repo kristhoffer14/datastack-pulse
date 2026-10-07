@@ -1,2 +1,3 @@
 requests 
 python-dotenv
+psycopg[binary] # This library is used to connect to a PostgreSQL database. The [binary] option installs the binary version of the library, which is faster and easier to install than the source version.
