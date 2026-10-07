@@ -23,5 +23,6 @@ select
     (payload ->> 'closed_at')::timestamptz         as closed_at,
     (payload -> 'pull_request' ->> 'merged_at')::timestamptz as merged_at,
     jsonb_array_length(payload -> 'labels') as labels_count,
+    payload -> 'user' ->> 'type' as author_type,
     _ingested_at
 from source

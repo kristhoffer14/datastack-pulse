@@ -27,6 +27,8 @@ select
         when i.closed_at is not null
         then extract(epoch from (i.closed_at - i.created_at)) / 3600.0
     end as hours_to_close,
+    i.author_type,
+    (i.merged_at is not null) as is_merged,
     i._ingested_at
 from {{ ref('stg_github__issues') }} as i
 left join {{ ref('dim_repo') }} as r
