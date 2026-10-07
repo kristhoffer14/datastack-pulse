@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: github
+    description: Raw GitHub API payloads loaded by the Python extractors.
+    schema: raw
+    loaded_at_field: _ingested_at
+    freshness:
+      warn_after: {count: 36, period: hour}
+      error_after: {count: 3, period: day}
+    tables:
+      - name: repo_snapshots
+        description: One row per repo per day, with the full API payload as jsonb.
+      - name: issues
+        description: One row per issue or PR, latest version only (upserted).
