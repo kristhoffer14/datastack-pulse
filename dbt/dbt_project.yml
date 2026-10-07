@@ -1,0 +1,21 @@
+name: datastack_pulse
+version: "1.0.0"
+config-version: 2
+profile: datastack_pulse
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+snapshot-paths: ["snapshots"]
+seed-paths: ["seeds"]
+
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  datastack_pulse:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
