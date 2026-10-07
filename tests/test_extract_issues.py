@@ -49,3 +49,21 @@ def test_fetch_issues_follows_pagination():
     assert session.calls[0]["params"]["since"] == "2026-09-01T00:00:00Z"
     assert session.calls[1]["params"] is None
     assert session.calls[1]["url"] == "https://api.github.com/page2"
+
+def test_fetch_issues_sleeps_when_rate_limit_exhausted(monkeypatch):
+    # Arrange: record sleep calls instead of really sleeping, and freeze the clock
+    sleeps = []
+    monkeypatch.setattr("extract_issues.time.sleep", sleeps.append)
+    monkeypatch.setattr("extract_issues.time.time", lambda: 1_000)
+
+    # The API reports 0 requests remaining; the window resets at t=1060
+    response = FakeResponse([{"id": 1}], remaining=0)
+    response.headers["X-RateLimit-Reset"] = "1060"
+    session = FakeSession([response])
+    since = datetime(2026, 9, 1, tzinfo=timezone.utc)
+
+    # Act
+    list(fetch_issues(session, "owner/repo", since))
+
+    # Assert: it waited (1060 - 1000) seconds plus the 1-second safety margin
+    assert sleeps == [61]
