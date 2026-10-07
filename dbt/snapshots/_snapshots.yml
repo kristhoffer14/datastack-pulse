@@ -1,0 +1,10 @@
+version: 2
+
+snapshots:
+  - name: snap_github__issues
+    relation: ref('stg_github__issues')
+    config:
+      schema: snapshots
+      unique_key: issue_key
+      strategy: timestamp
+      updated_at: updated_at
