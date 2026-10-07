@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_repo
+    description: One row per tracked repository (latest attributes).
+    columns:
+      - name: repo_id
+        data_tests: [unique, not_null]
+
+  - name: fct_issues
+    description: One row per issue or pull request, with cycle time in hours.
+    columns:
+      - name: issue_key
+        data_tests: [unique, not_null]
+      - name: repo_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_repo')
+                field: repo_id
+
+  - name: fct_repo_daily
+    description: One row per repository per day, with star and fork deltas.
+    columns:
+      - name: snapshot_key
+        data_tests: [unique, not_null]
+      - name: repo_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_repo')
+                field: repo_id
