@@ -13,9 +13,7 @@ def get_rate_limit(token=None):
     headers = {"Accept": "application/vnd.github+json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    response = requests.get(
-        "https://api.github.com/rate_limit", headers=headers, timeout=30
-    )
+    response = requests.get("https://api.github.com/rate_limit", headers=headers, timeout=30)
     response.raise_for_status()  # Raise an exception on HTTP errors (401, 403, ...)
     return response.json()["resources"]["core"]
 

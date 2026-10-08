@@ -32,9 +32,7 @@ class FakeSession:
 
 def test_fetch_issues_follows_pagination():
     # Arrange: two pages of results; page 1 points to page 2 via the 'next' link
-    page_1 = FakeResponse(
-        [{"id": 1}, {"id": 2}], next_url="https://api.github.com/page2"
-    )
+    page_1 = FakeResponse([{"id": 1}, {"id": 2}], next_url="https://api.github.com/page2")
     page_2 = FakeResponse([{"id": 3}])
     session = FakeSession([page_1, page_2])
     since = datetime(2026, 9, 1, tzinfo=timezone.utc)
@@ -49,6 +47,7 @@ def test_fetch_issues_follows_pagination():
     assert session.calls[0]["params"]["since"] == "2026-09-01T00:00:00Z"
     assert session.calls[1]["params"] is None
     assert session.calls[1]["url"] == "https://api.github.com/page2"
+
 
 def test_fetch_issues_sleeps_when_rate_limit_exhausted(monkeypatch):
     # Arrange: record sleep calls instead of really sleeping, and freeze the clock
