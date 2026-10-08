@@ -9,9 +9,38 @@ from datetime import datetime, timedelta
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.sdk import dag, task
 
+
+import logging
+import os
+
+import requests
+
 DBT_DIR = "/usr/local/airflow/include/dbt"
 DBT_BIN = "/usr/local/airflow/dbt_venv/bin/dbt"
 
+######################################################
+log = logging.getLogger(__name__)
+
+
+def notify_failure(context):
+    """Called by Airflow when a task exhausts its retries."""
+    ti = context["task_instance"]
+    message = (
+        f"Task failed after retries: dag={ti.dag_id} "
+        f"task={ti.task_id} run={ti.run_id} try={ti.try_number}"
+    )
+    log.error(message)
+
+    # Optional: forward the alert to a Slack-compatible webhook if configured
+    webhook_url = os.getenv("ALERT_WEBHOOK_URL")
+    if webhook_url:
+        try:
+            requests.post(webhook_url, json={"text": message}, timeout=10)
+        except requests.RequestException:
+            # An alerting failure must never mask the original task failure
+            log.exception("Could not deliver failure alert")
+
+#####################################################################
 
 @dag(
     dag_id="datastack_pulse_daily",
@@ -19,10 +48,16 @@ DBT_BIN = "/usr/local/airflow/dbt_venv/bin/dbt"
     start_date=datetime(2026, 10, 1),
     catchup=False,
     max_active_runs=1,
-    default_args={"retries": 2, "retry_delay": timedelta(minutes=5)},
+    #default_args={"retries": 2, "retry_delay": timedelta(minutes=5)},
+    default_args={
+        "retries": 2,
+        "retry_delay": timedelta(minutes=5),
+        "on_failure_callback": notify_failure,
+    },
     tags=["datastack-pulse", "elt"],
     doc_md=__doc__,
 )
+
 def datastack_pulse_daily():
     @task
     def load_repo_snapshots():
