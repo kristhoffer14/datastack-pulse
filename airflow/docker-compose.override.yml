@@ -1,0 +1,5 @@
+services:
+  scheduler:
+    volumes:
+      - ../extract:/usr/local/airflow/include/extract
+      - ../dbt:/usr/local/airflow/include/dbt
