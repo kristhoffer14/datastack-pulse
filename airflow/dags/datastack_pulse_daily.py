@@ -4,21 +4,17 @@ Loads GitHub repo snapshots and issues into Supabase (raw schema) in parallel,
 checks source freshness, then runs `dbt build` (models, tests and snapshots).
 """
 
-from datetime import datetime, timedelta
-
-from airflow.providers.standard.operators.bash import BashOperator
-from airflow.sdk import dag, task
-
-
 import logging
 import os
+from datetime import datetime, timedelta
 
 import requests
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.sdk import dag, task
 
 DBT_DIR = "/usr/local/airflow/include/dbt"
 DBT_BIN = "/usr/local/airflow/dbt_venv/bin/dbt"
 
-######################################################
 log = logging.getLogger(__name__)
 
 
@@ -40,7 +36,6 @@ def notify_failure(context):
             # An alerting failure must never mask the original task failure
             log.exception("Could not deliver failure alert")
 
-#####################################################################
 
 @dag(
     dag_id="datastack_pulse_daily",
@@ -48,7 +43,6 @@ def notify_failure(context):
     start_date=datetime(2026, 10, 1),
     catchup=False,
     max_active_runs=1,
-    #default_args={"retries": 2, "retry_delay": timedelta(minutes=5)},
     default_args={
         "retries": 2,
         "retry_delay": timedelta(minutes=5),
@@ -57,7 +51,6 @@ def notify_failure(context):
     tags=["datastack-pulse", "elt"],
     doc_md=__doc__,
 )
-
 def datastack_pulse_daily():
     @task
     def load_repo_snapshots():

@@ -53,9 +53,7 @@ def build_session():
 
 def get_watermark(cur, repo):
     """Return the latest updated_at already loaded for a repo (None on first run)."""
-    cur.execute(
-        "select max(updated_at) from raw.issues where repo_full_name = %s", (repo,)
-    )
+    cur.execute("select max(updated_at) from raw.issues where repo_full_name = %s", (repo,))
     return cur.fetchone()[0]
 
 
