@@ -25,6 +25,13 @@ The daily DAG loads repo snapshots and issues in parallel, checks source freshne
 runs `dbt build` (models, tests and snapshots). Failed tasks retry twice, and an alert
 callback fires once retries are exhausted.
 
+## Screenshots
+
+![Airflow DAG](docs/img/airflow-dag.png)
+
+![dbt lineage](docs/img/dbt-lineage.png)
+
+
 ## Data model
 
 | Layer | Model | Grain |
